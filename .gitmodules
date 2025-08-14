@@ -1,0 +1,9 @@
+[submodule "nodes/citypulse-web"]
+	path = nodes/citypulse-web
+	url = https://vishnusankaran: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@github.com/vishnusankaran/citypulse-web.git
+[submodule "nodes/citypulse-service"]
+	path = nodes/citypulse-service
+	url = https://vishnusankaran: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@github.com/vishnusankaran/citypulse-service.git
+[submodule "nodes/citypulse-database"]
+	path = nodes/citypulse-database
+	url = https://vishnusankaran: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@github.com/vishnusankaran/citypulse-database.git

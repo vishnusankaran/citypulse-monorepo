@@ -1,0 +1,110 @@
+services:
+  # Traefik reverse proxy
+  traefik:
+    image: traefik:v2.10
+    restart: always
+    ports:
+      - '80:80'
+      - '443:443'
+    depends_on:
+      - citypulse-web
+      - citypulse-service
+      - citypulse-database
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./traefik/config:/etc/traefik
+      - ./traefik/certs_prod:/certs # For Let's Encrypt certificates
+      # - ./traefik/dynamic_prod:/etc/traefik/dynamic # Optional: if using dynamic file provider in prod
+    command:
+      - '--providers.docker=true'
+      - '--providers.docker.exposedbydefault=false'
+      - '--api.dashboard=true' # Enabled for both, but not insecurely for prod by default
+      - '--entrypoints.web.address=:80'
+      - '--entrypoints.websecure.address=:443'
+      - '--entrypoints.web.http.redirections.entrypoint.to=websecure'
+      - '--entrypoints.web.http.redirections.entrypoint.scheme=https'
+      - '--certificatesresolvers.letsencrypt.acme.email=bio.local.tech@gmail.com'
+      - '--certificatesresolvers.letsencrypt.acme.storage=/certs/acme.json'
+      - '--certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web'
+      - '--providers.docker.defaultrule=Host(`{{ normalize .Name }}.citypulse.com`)'
+    networks:
+      - shared-network
+    labels:
+      - 'traefik.enable=true'
+      # Optional: Secure Traefik dashboard for production
+      # - 'traefik.http.routers.traefik-dashboard.rule=Host(`traefik.citypulse.com`)'
+      # - 'traefik.http.routers.traefik-dashboard.service=api@internal'
+      # - 'traefik.http.routers.traefik-dashboard.entrypoints=websecure'
+      # - 'traefik.http.routers.traefik-dashboard.tls.certresolver=letsencrypt'
+      # Add middleware for basic auth for the dashboard in production
+      # - "traefik.http.routers.traefik-dashboard.middlewares=traefik-auth"
+      # - "traefik.http.middlewares.traefik-auth.basicauth.users=USER:HASHED_PASSWORD" # Replace with actual user and hashed password
+
+  citypulse-web:
+    restart: always
+    build: ./nodes/citypulse-web
+    hostname: citypulse-web
+    environment:
+      - NODE_ENV=production
+      - ALLOWED_ORIGINS=
+      - PUBLIC_NODE_ENV=production
+      - PUBLIC_DOMAIN=.citypulse.com
+      - PUBLIC_CITYPULSE_SERVICE_ENDPOINT=https://citypulse-service.citypulse.com
+      - PUBLIC_API_ENDPOINT=https://citypulse-service.citypulse.com
+      - PUBLIC_AUTH_API_ENDPOINT=https://citypulse-service.citypulse.com
+    networks:
+      - shared-network
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.citypulse-web.entrypoints=websecure'
+      - 'traefik.http.routers.citypulse-web.rule=Host(`citypulse-web.citypulse.com`)'
+      - 'traefik.http.routers.citypulse-web.tls.certresolver=letsencrypt'
+      - 'traefik.http.services.citypulse-web.loadbalancer.server.port=5173'
+
+  citypulse-service:
+    restart: always
+    build: ./nodes/citypulse-service
+    hostname: citypulse-service
+    environment:
+      - NODE_ENV=production
+      - ALLOWED_ORIGINS=https://citypulse-web.citypulse.com
+      - DOMAIN=.citypulse.com
+      - CITYPULSE_DATABASE_ENDPOINT=https://citypulse-database.citypulse.com
+      - POSTGRES_CITYPULSE_DATABASE_DATABASE_URL=postgres://postgres:db_pass@citypulse-database:5432/postgres
+      - POSTGRES_DATABASE_URL=postgres://postgres:db_pass@citypulse-database:5432/postgres
+      - GITHUB_CLIENT_ID=${GITHUB_CLIENT_ID}
+      - GITHUB_CLIENT_SECRET=${GITHUB_CLIENT_SECRET}
+      - GITHUB_REDIRECT_URI=https://citypulse-service.citypulse.com/github/callback
+    networks:
+      - shared-network
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.citypulse-service.entrypoints=websecure'
+      - 'traefik.http.routers.citypulse-service.rule=Host(`citypulse-service.citypulse.com`)'
+      - 'traefik.http.routers.citypulse-service.tls.certresolver=letsencrypt'
+      - 'traefik.http.services.citypulse-service.loadbalancer.server.port=3000'
+
+  citypulse-database:
+    restart: always
+    build: ./nodes/citypulse-database
+    hostname: citypulse-database
+    environment:
+      - NODE_ENV=production
+      - ALLOWED_ORIGINS=https://citypulse-service.citypulse.com
+      - POSTGRES_PASSWORD=db_pass
+      - port=5432
+    networks:
+      - shared-network
+    ports: # Expose DB port only in dev if specified
+      - '5432:5432'
+    volumes:
+      - citypulse-database-prod-data:/var/lib/postgresql/data
+
+networks:
+  shared-network:
+    driver: bridge
+
+
+volumes:
+  citypulse-database-prod-data: # Production data volume for DB
+
