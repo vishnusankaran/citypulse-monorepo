@@ -42,11 +42,11 @@ services:
     environment:
       - NODE_ENV=development
       - ALLOWED_ORIGINS=
-      - PUBLIC_NODE_ENV=development
-      - PUBLIC_DOMAIN=.citypulse.localhost
-      - PUBLIC_CITYPULSE_SERVICE_ENDPOINT=https://citypulse-service.citypulse.localhost
-      - PUBLIC_API_ENDPOINT=https://citypulse-service.citypulse.localhost
-      - PUBLIC_AUTH_API_ENDPOINT=https://citypulse-service.citypulse.localhost
+      - VITE_PUBLIC_NODE_ENV=development
+      - VITE_PUBLIC_DOMAIN=.citypulse.localhost
+      - VITE_PUBLIC_CITYPULSE_SERVICE_ENDPOINT=https://citypulse-service.citypulse.localhost
+      - VITE_PUBLIC_API_ENDPOINT=https://citypulse-service.citypulse.localhost
+      - VITE_PUBLIC_AUTH_API_ENDPOINT=https://citypulse-service.citypulse.localhost
     networks:
       - shared-network
     volumes: # Mount code and node_modules only in dev
