@@ -26,13 +26,13 @@ services:
       - '--certificatesresolvers.letsencrypt.acme.email=bio.local.tech@gmail.com'
       - '--certificatesresolvers.letsencrypt.acme.storage=/certs/acme.json'
       - '--certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web'
-      - '--providers.docker.defaultrule=Host(`{{ normalize .Name }}.citypulse.com`)'
+      - '--providers.docker.defaultrule=Host(`{{ normalize .Name }}.citypulse.buzooka.in`)'
     networks:
       - shared-network
     labels:
       - 'traefik.enable=true'
       # Optional: Secure Traefik dashboard for production
-      # - 'traefik.http.routers.traefik-dashboard.rule=Host(`traefik.citypulse.com`)'
+      # - 'traefik.http.routers.traefik-dashboard.rule=Host(`traefik.citypulse.buzooka.in`)'
       # - 'traefik.http.routers.traefik-dashboard.service=api@internal'
       # - 'traefik.http.routers.traefik-dashboard.entrypoints=websecure'
       # - 'traefik.http.routers.traefik-dashboard.tls.certresolver=letsencrypt'
@@ -48,16 +48,16 @@ services:
       - NODE_ENV=production
       - ALLOWED_ORIGINS=
       - PUBLIC_NODE_ENV=production
-      - PUBLIC_DOMAIN=.citypulse.com
-      - PUBLIC_CITYPULSE_SERVICE_ENDPOINT=https://citypulse-service.citypulse.com
-      - PUBLIC_API_ENDPOINT=https://citypulse-service.citypulse.com
-      - PUBLIC_AUTH_API_ENDPOINT=https://citypulse-service.citypulse.com
+      - PUBLIC_DOMAIN=.citypulse.buzooka.in
+      - PUBLIC_CITYPULSE_SERVICE_ENDPOINT=https://citypulse-service.citypulse.buzooka.in
+      - PUBLIC_API_ENDPOINT=https://citypulse-service.citypulse.buzooka.in
+      - PUBLIC_AUTH_API_ENDPOINT=https://citypulse-service.citypulse.buzooka.in
     networks:
       - shared-network
     labels:
       - 'traefik.enable=true'
       - 'traefik.http.routers.citypulse-web.entrypoints=websecure'
-      - 'traefik.http.routers.citypulse-web.rule=Host(`citypulse-web.citypulse.com`)'
+      - 'traefik.http.routers.citypulse-web.rule=Host(`citypulse-web.citypulse.buzooka.in`)'
       - 'traefik.http.routers.citypulse-web.tls.certresolver=letsencrypt'
       - 'traefik.http.services.citypulse-web.loadbalancer.server.port=5173'
 
@@ -67,20 +67,20 @@ services:
     hostname: citypulse-service
     environment:
       - NODE_ENV=production
-      - ALLOWED_ORIGINS=https://citypulse-web.citypulse.com
-      - DOMAIN=.citypulse.com
-      - CITYPULSE_DATABASE_ENDPOINT=https://citypulse-database.citypulse.com
+      - ALLOWED_ORIGINS=https://citypulse-web.citypulse.buzooka.in
+      - DOMAIN=.citypulse.buzooka.in
+      - CITYPULSE_DATABASE_ENDPOINT=https://citypulse-database.citypulse.buzooka.in
       - POSTGRES_CITYPULSE_DATABASE_DATABASE_URL=postgres://postgres:db_pass@citypulse-database:5432/postgres
       - POSTGRES_DATABASE_URL=postgres://postgres:db_pass@citypulse-database:5432/postgres
       - GITHUB_CLIENT_ID=${GITHUB_CLIENT_ID}
       - GITHUB_CLIENT_SECRET=${GITHUB_CLIENT_SECRET}
-      - GITHUB_REDIRECT_URI=https://citypulse-service.citypulse.com/github/callback
+      - GITHUB_REDIRECT_URI=https://citypulse-service.citypulse.buzooka.in/github/callback
     networks:
       - shared-network
     labels:
       - 'traefik.enable=true'
       - 'traefik.http.routers.citypulse-service.entrypoints=websecure'
-      - 'traefik.http.routers.citypulse-service.rule=Host(`citypulse-service.citypulse.com`)'
+      - 'traefik.http.routers.citypulse-service.rule=Host(`citypulse-service.citypulse.buzooka.in`)'
       - 'traefik.http.routers.citypulse-service.tls.certresolver=letsencrypt'
       - 'traefik.http.services.citypulse-service.loadbalancer.server.port=3000'
 
@@ -90,7 +90,7 @@ services:
     hostname: citypulse-database
     environment:
       - NODE_ENV=production
-      - ALLOWED_ORIGINS=https://citypulse-service.citypulse.com
+      - ALLOWED_ORIGINS=https://citypulse-service.citypulse.buzooka.in
       - POSTGRES_PASSWORD=db_pass
       - port=5432
     networks:
