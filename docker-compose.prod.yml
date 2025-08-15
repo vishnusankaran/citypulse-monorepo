@@ -48,10 +48,10 @@ services:
       - NODE_ENV=production
       - ALLOWED_ORIGINS=
       - PUBLIC_NODE_ENV=production
-      - PUBLIC_DOMAIN=.citypulse.buzooka.in
-      - PUBLIC_CITYPULSE_SERVICE_ENDPOINT=https://citypulse-service.citypulse.buzooka.in
-      - PUBLIC_API_ENDPOINT=https://citypulse-service.citypulse.buzooka.in
-      - PUBLIC_AUTH_API_ENDPOINT=https://citypulse-service.citypulse.buzooka.in
+      - VITE_PUBLIC_DOMAIN=.citypulse.buzooka.in
+      - VITE_PUBLIC_CITYPULSE_SERVICE_ENDPOINT=https://citypulse-service.citypulse.buzooka.in
+      - VITE_PUBLIC_API_ENDPOINT=https://citypulse-service.citypulse.buzooka.in
+      - VITE_PUBLIC_AUTH_API_ENDPOINT=https://citypulse-service.citypulse.buzooka.in
     networks:
       - shared-network
     labels:
